@@ -78,14 +78,22 @@ const App = () => {
     }
   }
 
+  const logout = () => {
+    window.localStorage.removeItem('loggedUser')
+    location.reload()
+  }
+
   const loggedIn = () => {
     window.localStorage.setItem('loggedUser', JSON.stringify(user))
 
     return (
-      <p>
+      <div>
         <h2>blogs</h2>
-        {user.username} logged in
-      </p>
+        <p>
+          {user.username} logged in
+          <button onClick={logout}>logout</button>
+        </p>
+      </div>
     )
   }
 
