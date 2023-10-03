@@ -11,7 +11,16 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs => setBlogs(blogs))
+    if (user === null) blogService.getAll().then(blogs => setBlogs(blogs))
+    else getBlogs()
+  }, [])
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+    }
   }, [])
 
   useEffect(() => {
@@ -63,13 +72,15 @@ const App = () => {
     if (user) {
       const allUsers = await userService.getAll()
       const userInfo = allUsers.find(u => u.username === user.username)
-      console.log(allUsers)
-      console.log(userInfo)
+      // console.log(allUsers)
+      // console.log(userInfo)
       setBlogs(userInfo.blogs)
     }
   }
 
-  const loggedInUser = () => {
+  const loggedIn = () => {
+    window.localStorage.setItem('loggedUser', JSON.stringify(user))
+
     return (
       <p>
         <h2>blogs</h2>
@@ -77,11 +88,10 @@ const App = () => {
       </p>
     )
   }
-  
 
   return (
     <div>
-      {user === null ? loginForm() : loggedInUser()}
+      {user === null ? loginForm() : loggedIn()}
       {user === null && <h2>blogs</h2>}
       {blogs.map(blog => (
         <Blog
