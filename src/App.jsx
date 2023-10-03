@@ -9,10 +9,10 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
 
   useEffect(() => {
-    if (user === null) blogService.getAll().then(blogs => setBlogs(blogs))
-    else getBlogs()
+    blogService.getAll().then(blogs => setBlogs(blogs))
   }, [])
 
   useEffect(() => {
@@ -20,6 +20,8 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      getBlogs()
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -33,6 +35,7 @@ const App = () => {
     try {
       const user = await loginService.login({ username, password })
       setUser(user)
+      noteService.setToken(user.token)
     } catch (exception) {
       setErrorMessage('Wrong credentials')
       setTimeout(() => {
@@ -93,9 +96,64 @@ const App = () => {
           {user.username} logged in
           <button onClick={logout}>logout</button>
         </p>
+        {createNewBlogForm()}
       </div>
     )
   }
+
+  const createNewBlog = async (e) => {
+    e.preventDefault()
+    await blogService.create(newBlog)
+    setBlogs(blogs.concat(newBlog))
+    setNewBlog({ title: '', author: '', url: '' })
+  }
+
+  function handleChangeNewBlog(target) {
+    setNewBlog({ ...newBlog, [target.name]: target.value })
+  }
+
+  const createNewBlogForm = () => (
+    <form onSubmit={(e) => createNewBlog(e)}>
+      <h2>create new</h2>
+      <label htmlFor='title'>
+        {' '}
+        title
+        <input
+          type='text'
+          name='title'
+          id='title'
+          value={newBlog.title}
+          onChange={({target})=>handleChangeNewBlog(target)}
+        />
+      </label>
+      <br />
+      <label htmlFor='author'>
+        {' '}
+        author
+        <input
+          type='text'
+          name='author'
+          id='author'
+          value={newBlog.author}
+          onChange={({target})=>handleChangeNewBlog(target)}
+        />
+      </label>
+      <br />
+      <label htmlFor='url'>
+        {' '}
+        url
+        <input
+          type='text'
+          name='url'
+          id='url'
+          value={newBlog.url}
+          onChange={({target})=>handleChangeNewBlog(target)}
+        />
+      </label>
+      <br />
+      <button>create</button>
+    </form>
+  )
 
   return (
     <div>
