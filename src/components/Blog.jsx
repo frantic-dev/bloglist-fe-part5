@@ -1,7 +1,8 @@
 const Blog = ({ blog }) => (
   <div>
-    {blog.title} {blog.author}
-  </div>  
+    <span style={{ color: 'blue' }}> {blog.title}</span>{' '}
+    <span style={{ color: 'red' }}>{blog.author} </span>
+  </div>
 )
 
 export default Blog
