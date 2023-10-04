@@ -3,6 +3,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import userService from './services/users'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -10,6 +11,8 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
+  const [message, setMessage] = useState(null)
+  const [notificationType, setNotificationType] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -34,21 +37,26 @@ const App = () => {
 
     try {
       const user = await loginService.login({ username, password })
-      setUser(user)
-      noteService.setToken(user.token)
+
+      await setUser(user)
+      blogService.setToken(user.token)
+      setMessage('successfully logged in')
+      setNotificationType('success')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      setMessage('Wrong credentials')
+      setNotificationType('error')
     }
     setUsername('')
     setPassword('')
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
   }
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <h2>log in to application</h2>
+      <Notification message={message} type={notificationType} />
       <div>
         username
         <input
@@ -75,8 +83,6 @@ const App = () => {
     if (user) {
       const allUsers = await userService.getAll()
       const userInfo = allUsers.find(u => u.username === user.username)
-      // console.log(allUsers)
-      // console.log(userInfo)
       setBlogs(userInfo.blogs)
     }
   }
@@ -101,11 +107,16 @@ const App = () => {
     )
   }
 
-  const createNewBlog = async (e) => {
+  const createNewBlog = async e => {
     e.preventDefault()
     await blogService.create(newBlog)
     setBlogs(blogs.concat(newBlog))
     setNewBlog({ title: '', author: '', url: '' })
+    setMessage('a new blog has been added!')
+    setNotificationType('success')
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
   }
 
   function handleChangeNewBlog(target) {
@@ -113,7 +124,8 @@ const App = () => {
   }
 
   const createNewBlogForm = () => (
-    <form onSubmit={(e) => createNewBlog(e)}>
+    <form onSubmit={e => createNewBlog(e)}>
+      <Notification message={message} type={notificationType} />
       <h2>create new</h2>
       <label htmlFor='title'>
         {' '}
@@ -123,7 +135,7 @@ const App = () => {
           name='title'
           id='title'
           value={newBlog.title}
-          onChange={({target})=>handleChangeNewBlog(target)}
+          onChange={({ target }) => handleChangeNewBlog(target)}
         />
       </label>
       <br />
@@ -135,7 +147,7 @@ const App = () => {
           name='author'
           id='author'
           value={newBlog.author}
-          onChange={({target})=>handleChangeNewBlog(target)}
+          onChange={({ target }) => handleChangeNewBlog(target)}
         />
       </label>
       <br />
@@ -147,7 +159,7 @@ const App = () => {
           name='url'
           id='url'
           value={newBlog.url}
-          onChange={({target})=>handleChangeNewBlog(target)}
+          onChange={({ target }) => handleChangeNewBlog(target)}
         />
       </label>
       <br />
