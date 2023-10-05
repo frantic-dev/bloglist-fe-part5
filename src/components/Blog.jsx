@@ -22,7 +22,7 @@ const Blog = ({ blog }) => {
       <div style={{ display: display }}>
         url: {blog.url}
         <br />
-        likes: {blog.likes}
+        likes: {blog.likes || 0}
         <br />
         Author: <span style={{ color: 'red' }}>{blog.author} </span>
       </div>
