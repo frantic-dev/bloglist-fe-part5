@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog , updateBlogLikes}) => {
   const [visible, setVisible] = useState(false)
-  const buttonLabel = visible ? 'view' : 'hide'
+  const buttonLabel = visible ? 'hide' : 'view'
   const display = visible ? '' : 'none'
   const blogStyle = {
     paddingTop: 10,
@@ -23,6 +23,7 @@ const Blog = ({ blog }) => {
         url: {blog.url}
         <br />
         likes: {blog.likes || 0}
+        <button onClick={updateBlogLikes}>like</button>
         <br />
         Author: <span style={{ color: 'red' }}>{blog.author} </span>
       </div>
