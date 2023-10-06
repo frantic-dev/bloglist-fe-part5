@@ -35,6 +35,10 @@ const App = () => {
     getBlogs()
   }, [user])
 
+  function sortedBlogs(blogs) {
+    return blogs.sort((a, b) => b.likes - a.likes)
+  }
+
   const handleLogin = async e => {
     e.preventDefault()
 
@@ -158,8 +162,7 @@ const App = () => {
     <div>
       {user === null ? loginForm() : loggedIn()}
       {user === null && <h2>blogs</h2>}
-      {blogs.map(blog => {
-        // console.log(blog)
+      {sortedBlogs(blogs).map(blog => {
         return (
           <Blog
             key={blog.id}
