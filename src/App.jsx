@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -158,7 +159,7 @@ const App = () => {
     )
   }
 
-  const removeBlog = async(blog) => {
+  const removeBlog = async blog => {
     await blogService.remove(blog.id)
     setBlogs(blogs.filter(b => b !== blog))
     console.log(blogs)

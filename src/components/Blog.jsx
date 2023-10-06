@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog , updateBlogLikes, removeBlog}) => {
+const Blog = ({ blog , updateBlogLikes, removeBlog }) => {
   const [visible, setVisible] = useState(false)
   const buttonLabel = visible ? 'hide' : 'view'
   const display = visible ? '' : 'none'
