@@ -16,10 +16,10 @@ const Blog = ({ blog , updateBlogLikes, removeBlog }) => {
     setVisible(!visible)
   }
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       Title: <span style={{ color: 'blue' }}> {blog.title}</span>
       <button onClick={toggleVisibility}>{buttonLabel}</button>
-      <div style={{ display: display }}>
+      <div style={{ display: display }} className='hidden-info'>
         url: {blog.url}
         <br />
         likes: {blog.likes || 0}
