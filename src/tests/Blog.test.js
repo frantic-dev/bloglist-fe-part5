@@ -2,6 +2,7 @@ import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import Blog from '../components/Blog'
+import userEvent from '@testing-library/user-event'
 
 describe('<Blog/>', () => {
   let container
@@ -36,4 +37,17 @@ describe('<Blog/>', () => {
     expect(hiddenInfo).toHaveStyle('display: none')
   })
 
+  test('everything is rendered', async () => {
+    const title = container.querySelector('.blog')
+    const hiddenInfo = container.querySelector('.hidden-info')
+    const user = userEvent.setup()
+    const button = screen.getByText('view')
+
+    await user.click(button)
+
+    console.log(title)
+    console.log(hiddenInfo)
+    expect(title).not.toHaveStyle('display: none ')
+    expect(hiddenInfo).not.toHaveStyle('display: none')
+  })
 })
