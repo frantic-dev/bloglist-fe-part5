@@ -6,6 +6,8 @@ import userEvent from '@testing-library/user-event'
 
 describe('<Blog/>', () => {
   let container
+  let updateBlogLikes
+  let removeBlog
 
   beforeEach(() => {
     const blog = {
@@ -15,8 +17,8 @@ describe('<Blog/>', () => {
       url: 'top-dev.com',
     }
 
-    const updateBlogLikes = jest.fn()
-    const removeBlog = jest.fn()
+    updateBlogLikes = jest.fn()
+    removeBlog = jest.fn()
 
     container = render(
       <Blog
@@ -49,5 +51,15 @@ describe('<Blog/>', () => {
     console.log(hiddenInfo)
     expect(title).not.toHaveStyle('display: none ')
     expect(hiddenInfo).not.toHaveStyle('display: none')
+  })
+
+  test('like button is clicked twice', async () => {
+    const likeBtn = container.querySelector('.like-btn')
+    const user = userEvent.setup()
+
+    await user.click(likeBtn)
+    await user.click(likeBtn)
+
+    expect(updateBlogLikes.mock.calls).toHaveLength(2)
   })
 })
