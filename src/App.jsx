@@ -13,7 +13,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
   const [message, setMessage] = useState(null)
   const [notificationType, setNotificationType] = useState(null)
   const BlogFormRef = useRef()
@@ -122,12 +121,10 @@ const App = () => {
     )
   }
 
-  const createBlog = async e => {
-    e.preventDefault()
+  const createBlog = async (newBlog) => {
     BlogFormRef.current.toggleVisibility()
     await blogService.create(newBlog)
     setBlogs(blogs.concat(newBlog))
-    setNewBlog({ title: '', author: '', url: '' })
     setMessage('a new blog has been added!')
     setNotificationType('success')
     setTimeout(() => {
@@ -135,20 +132,12 @@ const App = () => {
     }, 5000)
   }
 
-  function handleChangeNewBlog(target) {
-    setNewBlog({ ...newBlog, [target.name]: target.value })
-  }
-
   const blogForm = () => (
     <Togglable
       buttonLabel='create new blog'
       ref={BlogFormRef}
     >
-      <BlogForm
-        newBlog={newBlog}
-        handleChange={handleChangeNewBlog}
-        createBlog={createBlog}
-      />
+      <BlogForm createBlog={createBlog} />
     </Togglable>
   )
 
@@ -162,7 +151,6 @@ const App = () => {
   const removeBlog = async blog => {
     await blogService.remove(blog.id)
     setBlogs(blogs.filter(b => b !== blog))
-    console.log(blogs)
   }
 
   return (
