@@ -72,6 +72,7 @@ const App = () => {
         <input
           type='text'
           value={username}
+          id='username'
           name='Username'
           onChange={({ target }) => setUsername(target.value)}
         />
@@ -81,11 +82,12 @@ const App = () => {
         <input
           type='password'
           value={password}
+          id='password'
           name='Password'
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type='submit'>login</button>
+      <button type='submit' id='login-btn'>login</button>
     </form>
   )
 
@@ -121,7 +123,7 @@ const App = () => {
     )
   }
 
-  const createBlog = async (newBlog) => {
+  const createBlog = async newBlog => {
     BlogFormRef.current.toggleVisibility()
     await blogService.create(newBlog)
     setBlogs(blogs.concat(newBlog))
