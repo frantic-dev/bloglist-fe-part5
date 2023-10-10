@@ -1,3 +1,5 @@
+import { func } from 'prop-types'
+
 describe('Blog app', function () {
   beforeEach(function () {
     cy.request('POST', 'http://localhost:3001/api/testing/reset')
@@ -39,7 +41,7 @@ describe('Blog app', function () {
     })
   })
 
-  describe.only('When logged in', function () {
+  describe('When logged in', function () {
     beforeEach(function () {
       cy.request('POST', 'http://localhost:3001/api/login', {
         username: 'fso',
@@ -58,6 +60,30 @@ describe('Blog app', function () {
 
       cy.get('#create-blog-btn').click()
       cy.contains('a very interesting title')
+    })
+
+    describe.only('a blog exists', function () {
+      beforeEach(function () {
+        cy.contains('create new blog').click()
+        cy.get('#title').type('a very interesting title')
+        cy.get('#author').type('author')
+        cy.get('#url').type('url')
+        cy.get('#create-blog-btn').click()
+
+        cy.visit('http://localhost:5173')
+      })
+
+      it('a user can like a blog', function () {
+        cy.get('.blog-btn').click()
+        cy.contains('like').click()
+        cy.contains('1')
+      })
+
+      it('a user can delete a blog', function () {
+        cy.get('.blog-btn').click()
+        cy.contains('remove').click()
+        cy.contains('remove').should('not.exist')
+      })
     })
   })
 })

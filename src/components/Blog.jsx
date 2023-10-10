@@ -18,7 +18,7 @@ const Blog = ({ blog , updateBlogLikes, removeBlog }) => {
   return (
     <div style={blogStyle} className='blog'>
       Title: <span style={{ color: 'blue' }}> {blog.title}</span>
-      <button onClick={toggleVisibility}>{buttonLabel}</button>
+      <button onClick={toggleVisibility} className='blog-btn'>{buttonLabel}</button>
       <div style={{ display: display }} className='hidden-info'>
         url: {blog.url}
         <br />

@@ -23,3 +23,15 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+Cypress.Commands.add('likeBlog', ({ title, author, url, likes }) => {
+  cy.request({
+    url: 'http://localhost:3001/api/notes',
+    method: 'PUT',
+    body: { title, author, url, likes },
+    headers: {
+      'Authorization': `Bearer ${JSON.parse(localStorage.getItem('loggedUser')).token}`
+    }
+  })
+
+  cy.visit('http://localhost:5173')
+})
