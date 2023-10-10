@@ -62,7 +62,7 @@ describe('Blog app', function () {
       cy.contains('a very interesting title')
     })
 
-    describe.only('a blog exists', function () {
+    describe('a blog exists', function () {
       beforeEach(function () {
         cy.contains('create new blog').click()
         cy.get('#title').type('a very interesting title')
@@ -82,6 +82,12 @@ describe('Blog app', function () {
       it('a user can delete a blog', function () {
         cy.get('.blog-btn').click()
         cy.contains('remove').click()
+        cy.contains('remove').should('not.exist')
+      })
+
+      it.only('only the creator can delete a blog', function () {
+        cy.contains('logout').click()
+        cy.get('.blog-btn').click()
         cy.contains('remove').should('not.exist')
       })
     })

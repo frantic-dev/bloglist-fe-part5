@@ -87,7 +87,12 @@ const App = () => {
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type='submit' id='login-btn'>login</button>
+      <button
+        type='submit'
+        id='login-btn'
+      >
+        login
+      </button>
     </form>
   )
 
@@ -164,6 +169,7 @@ const App = () => {
           <Blog
             key={blog.id}
             blog={blog}
+            user={user}
             updateBlogLikes={() => updateBlogLikes(blog)}
             removeBlog={() => removeBlog(blog)}
           />
