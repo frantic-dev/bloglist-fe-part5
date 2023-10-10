@@ -1,4 +1,5 @@
 import { func } from 'prop-types'
+import blogs from '../../src/services/blogs'
 
 describe('Blog app', function () {
   beforeEach(function () {
@@ -64,13 +65,11 @@ describe('Blog app', function () {
 
     describe('a blog exists', function () {
       beforeEach(function () {
-        cy.contains('create new blog').click()
-        cy.get('#title').type('a very interesting title')
-        cy.get('#author').type('author')
-        cy.get('#url').type('url')
-        cy.get('#create-blog-btn').click()
-
-        cy.visit('http://localhost:5173')
+        cy.createBlog({
+          title: 'a very interesting title',
+          author: 'author',
+          url: 'url',
+        })
       })
 
       it('a user can like a blog', function () {
@@ -85,10 +84,45 @@ describe('Blog app', function () {
         cy.contains('remove').should('not.exist')
       })
 
-      it.only('only the creator can delete a blog', function () {
+      it('only the creator can delete a blog', function () {
         cy.contains('logout').click()
         cy.get('.blog-btn').click()
         cy.contains('remove').should('not.exist')
+      })
+    })
+    describe.only('multiple blogs exist', () => {
+      let blogs = []
+      beforeEach(function () {
+        Array.from({ length: 8 }).map(() => {
+          const newBlog = {
+            title: 'a very interesting title',
+            author: 'author',
+            url: 'url',
+            likes: Math.floor(Math.random() * 1000),
+          }
+          cy.createBlog(newBlog)
+          blogs.push(newBlog)
+        })
+      })
+      it('blogs are ordered according to likes', function () {
+        const sortedBlogsByLikes = blogs
+          .slice()
+          .sort((a, b) => b.likes - a.likes)
+
+        cy.get('.blog').each(blog => {
+          cy.wrap(blog).contains('view').click()
+        })
+
+        cy.get('.blog-likes').each((blogLikes, index) => {
+          cy.wrap(blogLikes[index]).contains(sortedBlogsByLikes[index].likes)
+        })
+
+        // another way of checking blogs are sorted by likes
+        // for (let i = 0; i <= 7; i++) {
+        //   let number = sortedBlogsByLikes[i]
+        //   console.log(number)
+        //   cy.get('.blog-likes').eq(i).contains(number.likes)
+        // }
       })
     })
   })
