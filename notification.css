@@ -4,7 +4,6 @@
   padding: 20px;
   border-radius: 10px;
   margin: 20px 0;
-
 }
 .error {
   color: red;
@@ -13,5 +12,4 @@
 .success {
   color: green;
   border: 2px solid green;
-  
 }
