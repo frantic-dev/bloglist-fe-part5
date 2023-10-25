@@ -24,7 +24,6 @@ const App = () => {
   const blogs = useSelector(state => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  // const [user, setUser] = useState(null)
   const user = useSelector(state => state.user)
   const BlogFormRef = useRef()
   const dispatch = useDispatch()
@@ -52,24 +51,11 @@ const App = () => {
     return [...blogs].sort((a, b) => b.likes - a.likes)
   }
 
-  const handleLogin = async e => {
+  const handleLogin = e => {
     e.preventDefault()
-
-    try {
-      dispatch(login({ username, password }))
-      dispatch(
-        showNotification({ type: 'success', message: 'successfully logged in' })
-      )
-    } catch (exception) {
-      dispatch(
-        showNotification({ type: 'error', message: 'Wrong credentials' })
-      )
-    }
+    dispatch(login({ username, password }))
     setUsername('')
     setPassword('')
-    setTimeout(() => {
-      dispatch(hideNotification())
-    }, 5000)
   }
 
   const loginForm = () => (
@@ -137,15 +123,6 @@ const App = () => {
   const createBlog = async newBlog => {
     BlogFormRef.current.toggleVisibility()
     dispatch(addBlog(newBlog))
-    dispatch(
-      showNotification({
-        type: 'success',
-        message: 'a new blog has been added!',
-      })
-    )
-    setTimeout(() => {
-      dispatch(hideNotification())
-    }, 5000)
   }
 
   const blogForm = () => (

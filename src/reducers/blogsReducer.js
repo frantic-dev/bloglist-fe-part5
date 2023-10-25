@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import blogService from '../services/blogs'
+import { hideNotification, showNotification } from './notificationReducer'
 
 const blogSlice = createSlice({
   name: 'blogs',
@@ -19,7 +20,7 @@ const blogSlice = createSlice({
     },
     removeBlog(state, action) {
       return state.filter(blog => blog.id !== action.payload)
-    }
+    },
   },
 })
 
@@ -36,6 +37,15 @@ export const addBlog = blog => {
   return async dispatch => {
     const newBlog = await blogService.create(blog)
     dispatch(appendBlog(newBlog))
+    dispatch(
+      showNotification({
+        type: 'success',
+        message: 'a new blog has been added!',
+      })
+    )
+    setTimeout(() => {
+      dispatch(hideNotification())
+    }, 5000)
   }
 }
 
