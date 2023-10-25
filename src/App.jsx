@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
-import loginService from './services/login'
 import userService from './services/users'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
@@ -19,12 +18,14 @@ import {
   setBlogs,
   updateBlog,
 } from './reducers/blogsReducer'
+import { login, setUser } from './reducers/userReducer'
 
 const App = () => {
   const blogs = useSelector(state => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  // const [user, setUser] = useState(null)
+  const user = useSelector(state => state.user)
   const BlogFormRef = useRef()
   const dispatch = useDispatch()
   const notification = useSelector(state => state.notification)
@@ -37,7 +38,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setUser(user))
       getBlogs()
       blogService.setToken(user.token)
     }
@@ -55,10 +56,7 @@ const App = () => {
     e.preventDefault()
 
     try {
-      const user = await loginService.login({ username, password })
-
-      setUser(user)
-      blogService.setToken(user.token)
+      dispatch(login({ username, password }))
       dispatch(
         showNotification({ type: 'success', message: 'successfully logged in' })
       )
