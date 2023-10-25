@@ -7,15 +7,20 @@ import userService from './services/users'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  hideNotification,
+  showNotification,
+} from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState(null)
-  const [notificationType, setNotificationType] = useState(null)
   const BlogFormRef = useRef()
+  const dispatch = useDispatch()
+  const notification = useSelector(state => state.notification)
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -47,26 +52,25 @@ const App = () => {
 
       setUser(user)
       blogService.setToken(user.token)
-      setMessage('successfully logged in')
-      setNotificationType('success')
+      dispatch(
+        showNotification({ type: 'success', message: 'successfully logged in' })
+      )
     } catch (exception) {
-      setMessage('Wrong credentials')
-      setNotificationType('error')
+      dispatch(
+        showNotification({ type: 'error', message: 'Wrong credentials' })
+      )
     }
     setUsername('')
     setPassword('')
     setTimeout(() => {
-      setMessage(null)
+      dispatch(hideNotification())
     }, 5000)
   }
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <h2>log in to application</h2>
-      <Notification
-        message={message}
-        type={notificationType}
-      />
+      <Notification notification={notification} />
       <div>
         username
         <input
@@ -119,10 +123,7 @@ const App = () => {
           {user.username} logged in
           <button onClick={logout}>logout</button>
         </p>
-        <Notification
-          message={message}
-          type={notificationType}
-        />
+        <Notification notification={notification} />
         {blogForm()}
       </div>
     )
@@ -132,10 +133,14 @@ const App = () => {
     BlogFormRef.current.toggleVisibility()
     await blogService.create(newBlog)
     setBlogs(blogs.concat(newBlog))
-    setMessage('a new blog has been added!')
-    setNotificationType('success')
+    dispatch(
+      showNotification({
+        type: 'success',
+        message: 'a new blog has been added!',
+      })
+    )
     setTimeout(() => {
-      setMessage(null)
+      dispatch(hideNotification())
     }, 5000)
   }
 
