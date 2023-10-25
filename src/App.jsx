@@ -12,9 +12,10 @@ import {
   hideNotification,
   showNotification,
 } from './reducers/notificationReducer'
+import { addBlog, initializeBlogs, setBlogs } from './reducers/blogsReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const blogs = useSelector(state => state.blogs)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -23,7 +24,7 @@ const App = () => {
   const notification = useSelector(state => state.notification)
 
   useEffect(() => {
-    blogService.getAll().then(blogs => setBlogs(blogs))
+    dispatch(initializeBlogs())
   }, [])
 
   useEffect(() => {
@@ -41,7 +42,7 @@ const App = () => {
   }, [user])
 
   function sortedBlogs(blogs) {
-    return blogs.sort((a, b) => b.likes - a.likes)
+    return [...blogs].sort((a, b) => b.likes - a.likes)
   }
 
   const handleLogin = async e => {
@@ -104,7 +105,7 @@ const App = () => {
     if (user) {
       const allUsers = await userService.getAll()
       const userInfo = allUsers.find(u => u.username === user.username)
-      setBlogs(userInfo.blogs)
+      dispatch(setBlogs(userInfo.blogs))
     }
   }
 
@@ -131,8 +132,7 @@ const App = () => {
 
   const createBlog = async newBlog => {
     BlogFormRef.current.toggleVisibility()
-    await blogService.create(newBlog)
-    setBlogs(blogs.concat(newBlog))
+    dispatch(addBlog(newBlog))
     dispatch(
       showNotification({
         type: 'success',
