@@ -12,7 +12,13 @@ import {
   hideNotification,
   showNotification,
 } from './reducers/notificationReducer'
-import { addBlog, initializeBlogs, setBlogs } from './reducers/blogsReducer'
+import {
+  addBlog,
+  deleteBlog,
+  initializeBlogs,
+  setBlogs,
+  updateBlog,
+} from './reducers/blogsReducer'
 
 const App = () => {
   const blogs = useSelector(state => state.blogs)
@@ -154,15 +160,11 @@ const App = () => {
   )
 
   const updateBlogLikes = async blog => {
-    await blogService.update({ ...blog, likes: blog.likes + 1 }, blog.id)
-    setBlogs(blogs =>
-      blogs.map(b => (b === blog ? { ...blog, likes: blog.likes + 1 } : b))
-    )
+    dispatch(updateBlog(blog))
   }
 
-  const removeBlog = async blog => {
-    await blogService.remove(blog.id)
-    setBlogs(blogs.filter(b => b !== blog))
+  const removeBlog = async id => {
+    dispatch(deleteBlog(id))
   }
 
   return (
@@ -176,7 +178,7 @@ const App = () => {
             blog={blog}
             user={user}
             updateBlogLikes={() => updateBlogLikes(blog)}
-            removeBlog={() => removeBlog(blog)}
+            removeBlog={() => removeBlog(blog.id)}
           />
         )
       })}
