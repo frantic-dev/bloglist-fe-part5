@@ -10,6 +10,9 @@ import LoginForm from './components/LoginForm'
 import NotificationContext from './reducers/notificationReducer'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import UserContext from './reducers/userReducer'
+import UsersTable from './components/UsersTable'
+import userService from './services/users'
+
 
 const App = () => {
   const BlogFormRef = useRef()
@@ -134,6 +137,7 @@ const App = () => {
           />
         )
       })}
+      <UsersTable  />
     </div>
   )
 }
