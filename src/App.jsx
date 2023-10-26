@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {  useContext, useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import userService from './services/users'
@@ -7,61 +7,73 @@ import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  addBlog,
-  deleteBlog,
-  initializeBlogs,
-  setBlogs,
-  updateBlog,
-} from './reducers/blogsReducer'
+// import {
+//   addBlog,
+//   deleteBlog,
+//   initializeBlogs,
+//   setBlogs,
+//   updateBlog,
+// } from './reducers/blogsReducer'
 import { setUser } from './reducers/userReducer'
 import LoginForm from './components/LoginForm'
-import NotificationContext, { NotificationContextProvider } from './reducers/notificationReducer'
+import NotificationContext from './reducers/notificationReducer'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getBlogs } from './blogrequests'
+import axios from 'axios'
 
 const App = () => {
-  const blogs = useSelector(state => state.blogs)
   const user = useSelector(state => state.user)
   const BlogFormRef = useRef()
   const dispatch = useDispatch()
+  const [notification, dispatchNotification] = useContext(NotificationContext)
 
-  useEffect(() => {
-    dispatch(initializeBlogs())
-  }, [])
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      dispatchNotification({
+        type: 'SHOW',
+        payload: {
+          type: 'success',
+          message: 'a new blog has been added!',
+        },
+      })
+    },
+    onError: () => {
+      dispatchNotification({
+        type: 'SHOW',
+        payload: {
+          type: 'error',
+          message: 'missing form content',
+        },
+      })
+    },
+  })
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      dispatch(setUser(user))
-      getBlogs()
-      blogService.setToken(user.token)
-    }
-  }, [])
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: () => blogService.getAll(),
+  })
 
-  useEffect(() => {
-    getBlogs()
-  }, [user])
+  console.log(JSON.parse(JSON.stringify(result)))
 
-  function sortedBlogs(blogs) {
-    return [...blogs].sort((a, b) => b.likes - a.likes)
+  const blogs = result.data
+
+  const queryClient = useQueryClient()
+
+  if (result.isLoading) {
+    return <div>loading data...</div>
   }
 
-  const getBlogs = async () => {
-    if (user) {
-      const allUsers = await userService.getAll()
-      const userInfo = allUsers.find(u => u.username === user.username)
-      dispatch(setBlogs(userInfo.blogs))
-    }
+  function sortedBlogs(blogs) {
+    return blogs.sort((a, b) => b.likes - a.likes)
   }
 
   const logout = () => {
-    window.localStorage.removeItem('loggedUser')
     location.reload()
   }
 
   const loggedIn = () => {
-    window.localStorage.setItem('loggedUser', JSON.stringify(user))
-
     return (
       <div>
         <h2>blogs</h2>
@@ -74,10 +86,9 @@ const App = () => {
       </div>
     )
   }
-  const [notification, dispatchNotification] = useContext(NotificationContext)
   const createBlog = async newBlog => {
     BlogFormRef.current.toggleVisibility()
-    dispatch(addBlog(newBlog, dispatchNotification))
+    newBlogMutation.mutate(newBlog)
   }
 
   const blogForm = () => (
@@ -97,11 +108,16 @@ const App = () => {
     dispatch(deleteBlog(id))
   }
 
+  const userBlogs =
+    user === null
+      ? blogs
+      : blogs.filter(blog => blog.user.username === user.username)
+
   return (
     <div>
       {user === null ? <LoginForm /> : loggedIn()}
       {user === null && <h2>blogs</h2>}
-      {sortedBlogs(blogs).map(blog => {
+      {sortedBlogs(userBlogs).map(blog => {
         return (
           <Blog
             key={blog.id}

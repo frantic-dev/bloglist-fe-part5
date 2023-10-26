@@ -10,7 +10,6 @@ import { NotificationContextProvider } from './reducers/notificationReducer'
 
 const store = configureStore({
   reducer: {
-    blogs: blogsReducer,
     user: userReducer,
   },
 })
@@ -18,11 +17,11 @@ const store = configureStore({
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <NotificationContextProvider>
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <NotificationContextProvider>
       <Provider store={store}>
         <App />
       </Provider>
-    </QueryClientProvider>
-  </NotificationContextProvider>
+    </NotificationContextProvider>
+  </QueryClientProvider>
 )

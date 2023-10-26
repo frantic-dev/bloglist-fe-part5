@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { login } from '../reducers/userReducer'
 import NotificationContext from '../reducers/notificationReducer'
 
-const LoginForm = () => {
+const LoginForm = ({ mutate }) => {
   const dispatch = useDispatch()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
