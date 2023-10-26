@@ -2,7 +2,6 @@ import { createSlice } from '@reduxjs/toolkit'
 import loginService from '../services/login'
 import blogService from '../services/blogs'
 import { useDispatch } from 'react-redux'
-import { hideNotification, showNotification } from './notificationReducer'
 
 const userSlice = createSlice({
   name: 'user',
@@ -16,23 +15,32 @@ const userSlice = createSlice({
 
 export const { setUser } = userSlice.actions
 
-export const login = info => {
+export const login = (info, dispatchNotification) => {
   return async dispatch => {
     try {
       const user = await loginService.login(info)
+      console.log(user)
       dispatch(setUser(user))
       blogService.setToken(user.token)
-      dispatch(
-        showNotification({ type: 'success', message: 'successfully logged in' })
-      )
+      dispatchNotification({
+        type: 'SHOW',
+        payload: {
+          type: 'success',
+          message: 'successfully logged in',
+        },
+      })
     } catch (error) {
-      dispatch(
-        showNotification({ type: 'error', message: 'Wrong credentials' })
-      )
+      dispatchNotification({
+        type: 'SHOW',
+        payload: {
+          type: 'error',
+          message: 'wrong credentials',
+        },
+      })
     }
     setTimeout(() => {
-      dispatch(hideNotification())
-    }, 5000)
+      dispatchNotification({ type: 'HIDE' })
+    }, 2000)
   }
 }
 export default userSlice.reducer

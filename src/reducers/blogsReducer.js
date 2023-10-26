@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import blogService from '../services/blogs'
-import { hideNotification, showNotification } from './notificationReducer'
+// import { hideNotification, showNotification } from './notificationReducer'
 
 const blogSlice = createSlice({
   name: 'blogs',
@@ -33,18 +33,30 @@ export const initializeBlogs = () => {
   }
 }
 
-export const addBlog = blog => {
+export const addBlog = (blog, dispatchNotification) => {
   return async dispatch => {
-    const newBlog = await blogService.create(blog)
-    dispatch(appendBlog(newBlog))
-    dispatch(
-      showNotification({
-        type: 'success',
-        message: 'a new blog has been added!',
+    try {
+      const newBlog = await blogService.create(blog)
+      dispatch(appendBlog(newBlog))
+      dispatchNotification({
+        type: 'SHOW',
+        payload: {
+          type: 'success',
+          message: 'a new blog has been added!',
+        },
       })
-    )
+    } catch (error) {
+      dispatchNotification({
+        type: 'SHOW',
+        payload: {
+          type: 'error',
+          message: 'missing form content',
+        },
+      })
+    }
+
     setTimeout(() => {
-      dispatch(hideNotification())
+      dispatchNotification({ type: 'HIDE' })
     }, 5000)
   }
 }

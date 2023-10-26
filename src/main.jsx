@@ -1,21 +1,28 @@
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { configureStore } from '@reduxjs/toolkit'
-import notificationReducer from './reducers/notificationReducer'
 import { Provider } from 'react-redux'
 import blogsReducer from './reducers/blogsReducer'
 import userReducer from './reducers/userReducer'
+import { QueryClient } from '@tanstack/query-core'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { NotificationContextProvider } from './reducers/notificationReducer'
 
 const store = configureStore({
   reducer: {
-    notification: notificationReducer,
     blogs: blogsReducer,
-    user: userReducer
+    user: userReducer,
   },
 })
 
+const queryClient = new QueryClient()
+
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <Provider store={store}>
-    <App />
-  </Provider>
+  <NotificationContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </QueryClientProvider>
+  </NotificationContextProvider>
 )
