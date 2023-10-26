@@ -2,30 +2,20 @@
 import { useContext, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
-import userService from './services/users'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
-import { useDispatch, useSelector } from 'react-redux'
-// import {
-//   addBlog,
-//   deleteBlog,
-//   initializeBlogs,
-//   setBlogs,
-//   updateBlog,
-// } from './reducers/blogsReducer'
-import { setUser } from './reducers/userReducer'
+import { useDispatch } from 'react-redux'
 import LoginForm from './components/LoginForm'
 import NotificationContext from './reducers/notificationReducer'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { getBlogs } from './blogrequests'
-import axios from 'axios'
+import UserContext from './reducers/userReducer'
 
 const App = () => {
-  const user = useSelector(state => state.user)
   const BlogFormRef = useRef()
   const dispatch = useDispatch()
   const [notification, dispatchNotification] = useContext(NotificationContext)
+  const [user, dispatchUser] = useContext(UserContext)
 
   const newBlogMutation = useMutation({
     mutationFn: blogService.create,

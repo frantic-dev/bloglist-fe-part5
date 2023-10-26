@@ -1,26 +1,37 @@
-import { createSlice } from '@reduxjs/toolkit'
 import loginService from '../services/login'
 import blogService from '../services/blogs'
-import { useDispatch } from 'react-redux'
+import { createContext, useReducer } from 'react'
 
-const userSlice = createSlice({
-  name: 'user',
-  initialState: null,
-  reducers: {
-    setUser(state, action) {
+const initialState = null
+
+export const userReducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_USER':
       return action.payload
-    },
-  },
-})
+    default:
+      return initialState
+  }
+}
 
-export const { setUser } = userSlice.actions
+const UserContext = createContext()
 
-export const login = (info, dispatchNotification) => {
-  return async dispatch => {
+export const UserContextProvider = props => {
+  const [user, userDispatch] = useReducer(userReducer, initialState)
+  return (
+    <UserContext.Provider value={[user, userDispatch]}>
+      {props.children}
+    </UserContext.Provider>
+  )
+}
+
+export default UserContext
+
+export const login = (info, dispatchNotification, dispatchUser) => {
+  return async () => {
     try {
       const user = await loginService.login(info)
       console.log(user)
-      dispatch(setUser(user))
+      dispatchUser({ type: 'SET_USER', payload: user })
       blogService.setToken(user.token)
       dispatchNotification({
         type: 'SHOW',
@@ -43,4 +54,3 @@ export const login = (info, dispatchNotification) => {
     }, 2000)
   }
 }
-export default userSlice.reducer

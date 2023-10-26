@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 import Notification from './Notification'
-import { useDispatch, useSelector } from 'react-redux'
-import { login } from '../reducers/userReducer'
+import { useDispatch } from 'react-redux'
+import UserContext, { login } from '../reducers/userReducer'
 import NotificationContext from '../reducers/notificationReducer'
 
 const LoginForm = ({ mutate }) => {
@@ -9,9 +9,10 @@ const LoginForm = ({ mutate }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [notification, dispatchNotification] = useContext(NotificationContext)
+  const [user, dispatchUser] = useContext(UserContext)
   const handleLogin = e => {
     e.preventDefault()
-    dispatch(login({ username, password }, dispatchNotification))
+    dispatch(login({ username, password }, dispatchNotification, dispatchUser))
     setUsername('')
     setPassword('')
   }
