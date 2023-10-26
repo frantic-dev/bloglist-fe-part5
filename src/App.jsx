@@ -10,9 +10,10 @@ import LoginForm from './components/LoginForm'
 import NotificationContext from './reducers/notificationReducer'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import UserContext from './reducers/userReducer'
-import UsersTable from './components/UsersTable'
+import UsersTable, { useGetUsers } from './components/UsersTable'
 import userService from './services/users'
-
+import { Route, Router, Routes } from 'react-router'
+import ViewUserBlogs from './components/ViewUserBlogs'
 
 const App = () => {
   const BlogFormRef = useRef()
@@ -62,12 +63,19 @@ const App = () => {
     queryFn: () => blogService.getAll(),
     refetchOnWindowFocus: false,
   })
+  const queryClient = useQueryClient()
 
+  const usersResult = useQuery({
+    queryKey: ['users'],
+    queryFn: () => userService.getAll(),
+  })
+  const users = usersResult.data
+  if (usersResult.isLoading) {
+    return <div>loading data...</div>
+  }
   console.log(JSON.parse(JSON.stringify(result)))
 
   const blogs = result.data
-
-  const queryClient = useQueryClient()
 
   if (result.isLoading) {
     return <div>loading data...</div>
@@ -117,12 +125,14 @@ const App = () => {
     deleteBlogMutation.mutate(id)
   }
 
+  console.log(users)
+
   const userBlogs =
     user === null
       ? blogs
       : blogs.filter(blog => blog.user.username === user.username)
 
-  return (
+  const Home = () => (
     <div>
       {user === null ? <LoginForm /> : loggedIn()}
       {user === null && <h2>blogs</h2>}
@@ -137,7 +147,24 @@ const App = () => {
           />
         )
       })}
-      <UsersTable  />
+    </div>
+  )
+  return (
+    <div>
+      <Routes>
+        <Route
+          path='/'
+          element={<Home />}
+        />
+        {users.map(user => (
+          <Route
+            key={user.id}
+            path={`/users/${user.id}`}
+            element={<ViewUserBlogs user={user} />}
+          />
+        ))}
+      </Routes>
+      <UsersTable users={users} />
     </div>
   )
 }

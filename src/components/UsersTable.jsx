@@ -1,5 +1,5 @@
 import {
-  Link,
+  
   Paper,
   Table,
   TableBody,
@@ -9,16 +9,15 @@ import {
 } from '@mui/material'
 import userService from '../services/users'
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 
-const UsersTable = () => {
-  const result = useQuery({
+export const useGetUsers = () => {
+  return useQuery({
     queryKey: ['users'],
     queryFn: () => userService.getAll(),
   })
-  const users = result.data
-  if (result.isLoading) {
-    return <div>loading data...</div>
-  }
+}
+const UsersTable = ({ users }) => {
   return (
     <div>
       <h2>Users</h2>
@@ -32,7 +31,9 @@ const UsersTable = () => {
             </TableRow>
             {users.map(user => (
               <TableRow key={user.id}>
-                <TableCell>{user.name}</TableCell>
+                <TableCell>
+                  <Link to={`/users/${user.id}`}>{user.name}</Link>
+                </TableCell>
                 <TableCell>{user.blogs.length}</TableCell>
               </TableRow>
             ))}
