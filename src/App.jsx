@@ -50,9 +50,24 @@ const App = () => {
     },
   })
 
+  const likeBlogMutation = useMutation({
+    mutationFn: updatedBlog => blogService.update(updatedBlog, updatedBlog.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+  })
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: id => blogService.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+  })
+
   const result = useQuery({
     queryKey: ['blogs'],
     queryFn: () => blogService.getAll(),
+    refetchOnWindowFocus: false,
   })
 
   console.log(JSON.parse(JSON.stringify(result)))
@@ -101,11 +116,12 @@ const App = () => {
   )
 
   const updateBlogLikes = async blog => {
-    dispatch(updateBlog(blog))
+    const newBlog = { ...blog, likes: blog.likes + 1 }
+    likeBlogMutation.mutate(newBlog)
   }
 
   const removeBlog = async id => {
-    dispatch(deleteBlog(id))
+    deleteBlogMutation.mutate(id)
   }
 
   const userBlogs =
