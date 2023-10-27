@@ -1,21 +1,4 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-
 const Blog = ({ blog, updateBlogLikes, removeBlog, user }) => {
-  const [visible, setVisible] = useState(false)
-  const buttonLabel = visible ? 'hide' : 'view'
-  const display = visible ? '' : 'none'
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
-
-  function toggleVisibility() {
-    setVisible(!visible)
-  }
   console.log(blog)
   return (
     <div className='blog'>
@@ -34,6 +17,16 @@ const Blog = ({ blog, updateBlogLikes, removeBlog, user }) => {
         <button onClick={() => updateBlogLikes(blog)}>like</button>
       </div>
       <div>added by {blog.user.name}</div>
+      {blog.comments.length !== 0 && (
+        <div>
+          <h3>comments</h3>
+          <ul>
+            {blog.comments.map(({ comment, id }) => (
+              <li key={id}>{comment}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
