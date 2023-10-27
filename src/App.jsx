@@ -16,6 +16,7 @@ import { Route,  Routes } from 'react-router'
 import ViewUserBlogs from './components/ViewUserBlogs'
 import { Link, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
+import { Container } from '@mui/material'
 
 const App = () => {
   const BlogFormRef = useRef()
@@ -165,7 +166,7 @@ const App = () => {
     )
   }
   return (
-    <div>
+    <Container>
       <Navbar user={user} />
       <Routes>
         <Route
@@ -210,7 +211,7 @@ const App = () => {
           />
         ))}
       </Routes>
-    </div>
+    </Container>
   )
 }
 

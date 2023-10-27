@@ -1,4 +1,6 @@
+import { Button, TextField } from '@mui/material'
 import { useState } from 'react'
+import { spacing } from '@mui/system'
 
 const BlogForm = ({ createBlog }) => {
   const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
@@ -16,43 +18,41 @@ const BlogForm = ({ createBlog }) => {
   return (
     <form onSubmit={e => handleSubmit(e)}>
       <h2>create new</h2>
-      <label htmlFor='title'>
-        {' '}
-        title
-        <input
-          type='text'
-          name='title'
-          id='title'
-          value={newBlog.title}
-          onChange={({ target }) => handleChange(target)}
-        />
-      </label>
+      <TextField
+        sx={{ my: 1 }}
+        label='title'
+        value={newBlog.title}
+        id='title'
+        name='title'
+        onChange={({ target }) => handleChange(target)}
+      />
       <br />
-      <label htmlFor='author'>
-        {' '}
-        author
-        <input
-          type='text'
-          name='author'
-          id='author'
-          value={newBlog.author}
-          onChange={({ target }) => handleChange(target)}
-        />
-      </label>
+      <TextField
+        sx={{ my: 1 }}
+        label='username'
+        id='author'
+        name='author'
+        value={newBlog.author}
+        onChange={({ target }) => handleChange(target)}
+      />
       <br />
-      <label htmlFor='url'>
-        {' '}
-        url
-        <input
-          type='text'
-          name='url'
-          id='url'
-          value={newBlog.url}
-          onChange={({ target }) => handleChange(target)}
-        />
-      </label>
+      <TextField
+        sx={{ my: 1 }}
+        label='url'
+        id='url'
+        name='url'
+        value={newBlog.url}
+        onChange={({ target }) => handleChange(target)}
+      />
       <br />
-      <button id='create-blog-btn'>create</button>
+      <Button
+        sx={{ my: 1 }}
+        variant='contained'
+        color='primary'
+        type='submit'
+      >
+        create
+      </Button>
     </form>
   )
 }

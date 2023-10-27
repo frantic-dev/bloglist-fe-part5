@@ -3,6 +3,7 @@ import Notification from './Notification'
 import { useDispatch } from 'react-redux'
 import UserContext, { login } from '../reducers/userReducer'
 import NotificationContext from '../reducers/notificationReducer'
+import { Button, TextField } from '@mui/material'
 
 const LoginForm = ({ mutate }) => {
   const dispatch = useDispatch()
@@ -22,31 +23,33 @@ const LoginForm = ({ mutate }) => {
       <h2>log in to application</h2>
       <Notification notification={notification} />
       <div>
-        username
-        <input
-          type='text'
+        <TextField
+          sx={{ my: 1 }}
+          label='username'
           value={username}
           id='username'
-          name='Username'
+          name='username'
           onChange={({ target }) => setUsername(target.value)}
         />
       </div>
       <div>
-        password
-        <input
+        <TextField
+          sx={{ my: 1 }}
+          label='password'
           type='password'
           value={password}
           id='password'
-          name='Password'
+          name='password'
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button
+      <Button
+        variant='contained'
+        color='primary'
         type='submit'
-        id='login-btn'
       >
         login
-      </button>
+      </Button>
     </form>
   )
 }
