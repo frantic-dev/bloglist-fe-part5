@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useRef } from 'react'
+import { useContext, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import Notification from './components/Notification'
@@ -14,7 +14,8 @@ import UsersTable, { useGetUsers } from './components/UsersTable'
 import userService from './services/users'
 import { Route, Router, Routes } from 'react-router'
 import ViewUserBlogs from './components/ViewUserBlogs'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
+import Navbar from './components/Navbar'
 
 const App = () => {
   const BlogFormRef = useRef()
@@ -142,7 +143,7 @@ const App = () => {
     }
     return (
       <div>
-        {user === null ? <LoginForm /> : loggedIn()}
+        {user !== null && loggedIn()}
         {user === null && <h2>blogs</h2>}
         {sortedBlogs(blogs).map(blog => {
           return (
@@ -159,10 +160,19 @@ const App = () => {
   }
   return (
     <div>
+      <Navbar user={user} />
       <Routes>
         <Route
           path='/'
           element={<Home />}
+        />
+        <Route
+          path='/users'
+          element={<UsersTable users={users} />}
+        />
+        <Route
+          path='/login'
+          element={!user ? <LoginForm /> : <Navigate replace to={'/'} /> }
         />
         {users.map(user => (
           <Route
@@ -184,7 +194,6 @@ const App = () => {
           />
         ))}
       </Routes>
-      <UsersTable users={users} />
     </div>
   )
 }
