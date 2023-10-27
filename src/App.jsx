@@ -14,6 +14,7 @@ import UsersTable, { useGetUsers } from './components/UsersTable'
 import userService from './services/users'
 import { Route, Router, Routes } from 'react-router'
 import ViewUserBlogs from './components/ViewUserBlogs'
+import { Link } from 'react-router-dom'
 
 const App = () => {
   const BlogFormRef = useRef()
@@ -44,15 +45,15 @@ const App = () => {
     },
   })
 
-  const likeBlogMutation = useMutation({
-    mutationFn: updatedBlog => blogService.update(updatedBlog, updatedBlog.id),
+  const deleteBlogMutation = useMutation({
+    mutationFn: id => blogService.remove(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
     },
   })
 
-  const deleteBlogMutation = useMutation({
-    mutationFn: id => blogService.remove(id),
+  const likeBlogMutation = useMutation({
+    mutationFn: updatedBlog => blogService.update(updatedBlog, updatedBlog.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
     },
@@ -90,6 +91,7 @@ const App = () => {
   }
 
   const loggedIn = () => {
+    console.log(user)
     return (
       <div>
         <h2>blogs</h2>
@@ -125,30 +127,36 @@ const App = () => {
     deleteBlogMutation.mutate(id)
   }
 
-  console.log(users)
-
   const userBlogs =
     user === null
       ? blogs
       : blogs.filter(blog => blog.user.username === user.username)
 
-  const Home = () => (
-    <div>
-      {user === null ? <LoginForm /> : loggedIn()}
-      {user === null && <h2>blogs</h2>}
-      {sortedBlogs(userBlogs).map(blog => {
-        return (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            user={user}
-            updateBlogLikes={() => updateBlogLikes(blog)}
-            removeBlog={() => removeBlog(blog.id)}
-          />
-        )
-      })}
-    </div>
-  )
+  const Home = () => {
+    const style = {
+      paddingTop: 10,
+      paddingLeft: 2,
+      border: 'solid',
+      borderWidth: 1,
+      marginBottom: 5,
+    }
+    return (
+      <div>
+        {user === null ? <LoginForm /> : loggedIn()}
+        {user === null && <h2>blogs</h2>}
+        {sortedBlogs(blogs).map(blog => {
+          return (
+            <div
+              key={blog.id}
+              style={style}
+            >
+              <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
   return (
     <div>
       <Routes>
@@ -161,6 +169,18 @@ const App = () => {
             key={user.id}
             path={`/users/${user.id}`}
             element={<ViewUserBlogs user={user} />}
+          />
+        ))}
+        {blogs.map(blog => (
+          <Route
+            key={blog.id}
+            path={`/blogs/${blog.id}`}
+            element={
+              <Blog
+                blog={blog}
+                updateBlogLikes={updateBlogLikes}
+              />
+            }
           />
         ))}
       </Routes>
