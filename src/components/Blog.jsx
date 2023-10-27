@@ -1,5 +1,6 @@
-const Blog = ({ blog, updateBlogLikes, removeBlog, user }) => {
-  console.log(blog)
+import Comments from './Comments'
+
+const Blog = ({ blog, updateBlogLikes, removeBlog, user, commentMutation }) => {
   return (
     <div className='blog'>
       <h2>{blog.title}</h2>
@@ -17,16 +18,11 @@ const Blog = ({ blog, updateBlogLikes, removeBlog, user }) => {
         <button onClick={() => updateBlogLikes(blog)}>like</button>
       </div>
       <div>added by {blog.user.name}</div>
-      {blog.comments.length !== 0 && (
-        <div>
-          <h3>comments</h3>
-          <ul>
-            {blog.comments.map(({ comment, id }) => (
-              <li key={id}>{comment}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <Comments
+        comments={blog.comments}
+        commentMutation={commentMutation}
+        id={blog.id}
+      />
     </div>
   )
 }

@@ -12,7 +12,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import UserContext from './reducers/userReducer'
 import UsersTable, { useGetUsers } from './components/UsersTable'
 import userService from './services/users'
-import { Route, Router, Routes } from 'react-router'
+import { Route,  Routes } from 'react-router'
 import ViewUserBlogs from './components/ViewUserBlogs'
 import { Link, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
@@ -27,6 +27,7 @@ const App = () => {
     mutationFn: blogService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      queryClient.invalidateQueries({ queryKey: ['users'] })
       dispatchNotification({
         type: 'SHOW',
         payload: {
@@ -46,12 +47,19 @@ const App = () => {
     },
   })
 
-  const deleteBlogMutation = useMutation({
-    mutationFn: id => blogService.remove(id),
+  const commentMutation = useMutation({
+    mutationFn: ({ id, comment }) => blogService.comment(id, comment),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
     },
   })
+
+  // const deleteBlogMutation = useMutation({
+  //   mutationFn: id => blogService.remove(id),
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['blogs'] })
+  //   },
+  // })
 
   const likeBlogMutation = useMutation({
     mutationFn: updatedBlog => blogService.update(updatedBlog, updatedBlog.id),
@@ -75,7 +83,6 @@ const App = () => {
   if (usersResult.isLoading) {
     return <div>loading data...</div>
   }
-  console.log(JSON.parse(JSON.stringify(result)))
 
   const blogs = result.data
 
@@ -92,7 +99,6 @@ const App = () => {
   }
 
   const loggedIn = () => {
-    console.log(user)
     return (
       <div>
         <h2>blogs</h2>
@@ -124,9 +130,9 @@ const App = () => {
     likeBlogMutation.mutate(newBlog)
   }
 
-  const removeBlog = async id => {
-    deleteBlogMutation.mutate(id)
-  }
+  // const removeBlog = async id => {
+  //   deleteBlogMutation.mutate(id)
+  // }
 
   const userBlogs =
     user === null
@@ -172,7 +178,16 @@ const App = () => {
         />
         <Route
           path='/login'
-          element={!user ? <LoginForm /> : <Navigate replace to={'/'} /> }
+          element={
+            !user ? (
+              <LoginForm />
+            ) : (
+              <Navigate
+                replace
+                to={'/'}
+              />
+            )
+          }
         />
         {users.map(user => (
           <Route
@@ -189,6 +204,7 @@ const App = () => {
               <Blog
                 blog={blog}
                 updateBlogLikes={updateBlogLikes}
+                commentMutation={commentMutation}
               />
             }
           />

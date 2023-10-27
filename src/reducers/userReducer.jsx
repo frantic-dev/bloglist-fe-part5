@@ -30,7 +30,6 @@ export const login = (info, dispatchNotification, dispatchUser) => {
   return async () => {
     try {
       const user = await loginService.login(info)
-      console.log(user)
       dispatchUser({ type: 'SET_USER', payload: user })
       blogService.setToken(user.token)
       dispatchNotification({
